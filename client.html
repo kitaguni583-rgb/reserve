@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>継続セッションのご予約｜天野トウキ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<script>
+  const CONFIG = {
+    // TimeRexの予約ページURL（既存クライアント・奥の院メンバー向け個別予約フォーム）
+    timerexUrl: "https://timerex.net/s/kitaguni583_f838/f04bad02"
+  };
+</script>
+<style>
+  :root{
+    --bg:#f6f1e9;
+    --paper:#fffdf9;
+    --ink:#2b2622;
+    --sub:#6e655c;
+    --line:#e4d9ca;
+    --accent:#b4562f;
+    --accent-dark:#8f4224;
+    --gold:#c19a5b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.9;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px}
+
+  /* ---------- ヘッダー ---------- */
+  header{padding:56px 0 32px;text-align:center}
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.2em;color:var(--accent);
+    border:1px solid var(--accent);border-radius:999px;padding:4px 14px;margin-bottom:20px;
+  }
+  h1{
+    font-family:"Shippori Mincho",serif;font-weight:700;
+    font-size:clamp(28px,7vw,40px);line-height:1.45;letter-spacing:.04em;
+  }
+  h1 .small{display:block;font-size:.5em;color:var(--sub);letter-spacing:.12em;margin-top:6px;font-weight:500}
+  .lead{margin-top:20px;color:var(--sub);font-size:15px}
+
+  /* ---------- カード ---------- */
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:18px;
+    padding:28px 22px;margin-bottom:28px;box-shadow:0 8px 30px -18px rgba(80,50,20,.25);
+  }
+  .card h2{
+    font-family:"Shippori Mincho",serif;font-size:21px;line-height:1.5;margin-bottom:6px;
+  }
+  .card .note{font-size:14px;color:var(--sub);margin-bottom:20px}
+
+  .calendar{width:100%;min-height:720px;border:0;border-radius:12px;background:#fff}
+  .btn{
+    display:block;text-align:center;text-decoration:none;font-weight:700;
+    background:var(--accent);color:#fff;padding:16px;border-radius:12px;margin-top:16px;
+    transition:background .2s;
+  }
+  .btn:hover{background:var(--accent-dark)}
+  .info{list-style:none;font-size:14px;margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+  .info li{display:flex;gap:10px;padding:4px 0}
+  .info li span:first-child{color:var(--accent);min-width:4.5em;font-weight:500}
+
+  footer{text-align:center;font-size:12px;color:var(--sub);padding:20px 0 48px}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <span class="eyebrow">クライアント様・奥の院メンバー専用</span>
+  <h1>継続セッションのご予約
+    <span class="small">天野トウキ</span>
+  </h1>
+  <p class="lead">
+    いつもありがとうございます。<br>
+    次回のセッションの日時を、こちらからお選びください。
+  </p>
+</header>
+
+<main class="wrap">
+
+  <section class="card" id="booking">
+    <h2>セッションの日時を選ぶ</h2>
+    <p class="note">空いている時間だけが表示されています。</p>
+
+    <div id="calendar-slot">
+      <div id="timerex_calendar" data-url="https://timerex.net/s/kitaguni583_f838/f04bad02"></div>
+    </div>
+    <a class="btn" href="https://timerex.net/s/kitaguni583_f838/f04bad02" target="_blank" rel="noopener">予約フォームを直接開く</a>
+
+    <ul class="info">
+      <li><span>時間</span><span>120分</span></li>
+      <li><span>場所</span><span>Zoom（URLは予約完了メールで届きます）</span></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>© 天野トウキ</footer>
+
+<script>
+(function(){
+  const s = document.createElement("script");
+  s.id = "timerex_embed";
+  s.src = "https://asset.timerex.net/js/embed.js";
+  s.onload = function(){ try { TimerexCalendar(); } catch(e) {} };
+  document.body.appendChild(s);
+})();
+</script>
+</body>
+</html>
