@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>未来のロードマップ作成｜天野トウキ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ===========================================
+     ここだけ書き換えればOK（設定）
+     =========================================== */
+</style>
+<script>
+  const CONFIG = {
+    // YouTube動画のID（URLの「v=」のあと、または youtu.be/ のあとの文字列）
+    // 例: https://youtu.be/AbCdEf12345 → "AbCdEf12345"
+    youtubeId: "akTSsiAVULQ",
+
+    // 動画の終わりの何秒前に予約カレンダーを開くか（0なら最後まで見たら開く）
+    openBeforeEndSec: 120,
+
+    // TimeRexの予約ページURL（TimeRexで作った日程調整カレンダーのURL）
+    // 例: "https://timerex.net/s/xxxx/yyyy"
+    timerexUrl: "https://timerex.net/s/kitaguni583_f838/d501b021",
+
+    // true にすると、動画を見なくても最初から予約カレンダーを表示
+    showBookingWithoutVideo: false
+  };
+</script>
+<style>
+  :root{
+    --bg:#f6f1e9;
+    --paper:#fffdf9;
+    --ink:#2b2622;
+    --sub:#6e655c;
+    --line:#e4d9ca;
+    --accent:#b4562f;
+    --accent-dark:#8f4224;
+    --gold:#c19a5b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.9;
+    font-size:16px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px}
+
+  /* ---------- ヘッダー ---------- */
+  header{padding:56px 0 32px;text-align:center}
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:.2em;color:var(--accent);
+    border:1px solid var(--accent);border-radius:999px;padding:4px 14px;margin-bottom:20px;
+  }
+  h1{
+    font-family:"Shippori Mincho",serif;font-weight:700;
+    font-size:clamp(28px,7vw,40px);line-height:1.45;letter-spacing:.04em;
+  }
+  h1 .small{display:block;font-size:.5em;color:var(--sub);letter-spacing:.12em;margin-top:6px;font-weight:500}
+  .lead{margin-top:20px;color:var(--sub);font-size:15px}
+
+  /* ---------- ステップ表示 ---------- */
+  .steps{display:flex;gap:8px;justify-content:center;margin:8px 0 36px;font-size:13px}
+  .step{
+    display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+    background:var(--paper);border:1px solid var(--line);color:var(--sub);
+    transition:all .4s;
+  }
+  .step b{
+    display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;
+    background:var(--line);color:var(--paper);font-size:11px;
+  }
+  .step.active{border-color:var(--accent);color:var(--ink)}
+  .step.active b{background:var(--accent)}
+  .step.done{color:var(--sub)}
+  .step.done b{background:var(--gold)}
+
+  /* ---------- カード ---------- */
+  .card{
+    background:var(--paper);border:1px solid var(--line);border-radius:18px;
+    padding:28px 22px;margin-bottom:28px;box-shadow:0 8px 30px -18px rgba(80,50,20,.25);
+  }
+  .card h2{
+    font-family:"Shippori Mincho",serif;font-size:21px;line-height:1.5;margin-bottom:6px;
+  }
+  .card .note{font-size:14px;color:var(--sub);margin-bottom:20px}
+
+  /* ---------- 動画 ---------- */
+  .video{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#1f1b18}
+  .video iframe,.video #player{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .video-empty{
+    position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+    color:#d9cbb8;font-size:14px;padding:20px;
+  }
+  .progress{height:6px;background:var(--line);border-radius:999px;margin-top:16px;overflow:hidden}
+  .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--accent));transition:width .5s}
+  .progress-label{font-size:12px;color:var(--sub);margin-top:6px;text-align:right}
+
+  /* ---------- 予約エリア（最初は鍵） ---------- */
+  .locked{
+    text-align:center;padding:36px 22px;border:1px dashed var(--line);border-radius:18px;
+    color:var(--sub);font-size:14px;background:rgba(255,253,249,.5);
+  }
+  .locked .icon{font-size:26px;margin-bottom:8px;opacity:.6}
+  #booking{display:none}
+  #booking.open{display:block;animation:rise .8s ease both}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .thanks{
+    font-family:"Shippori Mincho",serif;font-size:15px;line-height:2;
+    background:#f8efe3;border-left:3px solid var(--gold);padding:14px 16px;border-radius:6px;margin-bottom:20px;
+  }
+  .calendar{width:100%;min-height:720px;border:0;border-radius:12px;background:#fff}
+  .calendar-empty{
+    min-height:240px;display:grid;place-items:center;text-align:center;font-size:14px;color:var(--sub);
+    border:1px solid var(--line);border-radius:12px;padding:20px;
+  }
+  .btn{
+    display:block;text-align:center;text-decoration:none;font-weight:700;
+    background:var(--accent);color:#fff;padding:16px;border-radius:12px;margin-top:16px;
+    transition:background .2s;
+  }
+  .btn:hover{background:var(--accent-dark)}
+  .info{list-style:none;font-size:14px;margin-top:20px;border-top:1px solid var(--line);padding-top:16px}
+  .info li{display:flex;gap:10px;padding:4px 0}
+  .info li span:first-child{color:var(--accent);min-width:4.5em;font-weight:500}
+
+  footer{text-align:center;font-size:12px;color:var(--sub);padding:20px 0 48px}
+
+  /* デモ用ボタン（動画未設定のときだけ表示） */
+  .demo{
+    margin-top:14px;width:100%;padding:10px;border-radius:10px;border:1px dashed var(--accent);
+    background:transparent;color:var(--accent);font:inherit;font-size:13px;cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <span class="eyebrow">無料個別相談</span>
+  <h1>未来のロードマップ作成
+    <span class="small">天野トウキ</span>
+  </h1>
+  <p class="lead">
+    相談の前に、まずはこの動画を見てください。<br>
+    ここで話していることを前提に、<br>
+    あなたのこれからを一緒に描いていきます。
+  </p>
+</header>
+
+<main class="wrap">
+
+  <div class="steps" aria-hidden="true">
+    <div class="step active" id="step1"><b>1</b>動画を見る</div>
+    <div class="step" id="step2"><b>2</b>日時を選ぶ</div>
+  </div>
+
+  <!-- STEP 1：動画 -->
+  <section class="card" id="video-section">
+    <h2>まずは、この動画から</h2>
+    <p class="note">終わり近くまで見ると、下に予約カレンダーが開きます。</p>
+    <div class="video">
+      <div id="player"></div>
+      <div class="video-empty" id="video-empty" hidden>
+        ここにトウキの動画が入ります<br>（YouTubeのIDを設定すると表示）
+      </div>
+    </div>
+    <div class="progress"><span id="bar"></span></div>
+    <p class="progress-label" id="bar-label">0%</p>
+    <button class="demo" id="demo-btn" hidden>（確認用）動画を見終わったことにする</button>
+  </section>
+
+  <!-- 鍵がかかった状態 -->
+  <div class="locked" id="locked">
+    <div class="icon">🔒</div>
+    動画の終わり近くで、ここに予約カレンダーが開きます
+  </div>
+
+  <!-- STEP 2：予約 -->
+  <section class="card" id="booking">
+    <div class="thanks">
+      最後まで見てくれて、ありがとう。<br>
+      ここから先は、あなたの話を聞かせてください。
+    </div>
+    <h2>相談の日時を選ぶ</h2>
+    <p class="note">空いている時間だけが表示されています。</p>
+
+    <div id="calendar-slot"></div>
+
+    <ul class="info">
+      <li><span>時間</span><span>60分</span></li>
+      <li><span>場所</span><span>Zoom（URLは予約完了メールで届きます）</span></li>
+      <li><span>料金</span><span>無料</span></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>© 天野トウキ</footer>
+
+<script>
+(function(){
+  const STORAGE_KEY = "roadmap_video_done";
+  const $ = (id) => document.getElementById(id);
+  let opened = false;
+
+  function setProgress(p){
+    if (opened && p < 100) return;
+    const v = Math.max(0, Math.min(100, Math.round(p)));
+    $("bar").style.width = v + "%";
+    $("bar-label").textContent = v + "%";
+  }
+
+  function renderCalendar(){
+    const slot = $("calendar-slot");
+    if (CONFIG.timerexUrl){
+      // TimeRex公式ウィジェット（予約ページが開いたときに読み込む）
+      slot.innerHTML =
+        '<div id="timerex_calendar" data-url="' + CONFIG.timerexUrl + '"></div>' +
+        '<a class="btn" href="' + CONFIG.timerexUrl + '" target="_blank" rel="noopener">カレンダーが表示されない方はこちら</a>';
+      const s = document.createElement("script");
+      s.id = "timerex_embed";
+      s.src = "https://asset.timerex.net/js/embed.js";
+      s.onload = function(){ try { TimerexCalendar(); } catch(e) {} };
+      document.body.appendChild(s);
+    } else {
+      slot.innerHTML = '<div class="calendar-empty">ここにTimeRexの予約カレンダーが入ります<br>（TimeRexのURLを設定すると表示）</div>';
+    }
+  }
+
+  function openBooking(scroll){
+    if (opened) return;
+    opened = true;
+    setProgress(100);
+    $("step1").classList.remove("active");
+    $("step1").classList.add("done");
+    $("step2").classList.add("active");
+    $("locked").style.display = "none";
+    renderCalendar();
+    $("booking").classList.add("open");
+    try { localStorage.setItem(STORAGE_KEY, "1"); } catch(e) {}
+    if (scroll) setTimeout(() => $("booking").scrollIntoView({behavior:"smooth", block:"start"}), 300);
+  }
+
+  // 一度見終わった人は、次に来たときも最初から予約できる
+  let watchedBefore = false;
+  try { watchedBefore = localStorage.getItem(STORAGE_KEY) === "1"; } catch(e) {}
+  if (watchedBefore || CONFIG.showBookingWithoutVideo) openBooking(false);
+
+  // 動画が未設定のとき（下書き確認用）
+  if (!CONFIG.youtubeId){
+    $("video-empty").hidden = false;
+    $("demo-btn").hidden = false;
+    $("demo-btn").addEventListener("click", () => openBooking(true));
+    return;
+  }
+
+  // YouTube 読み込み
+  const tag = document.createElement("script");
+  tag.src = "https://www.youtube.com/iframe_api";
+  tag.onerror = () => openBooking(false); // 読み込めない環境では、予約できないままにしない
+  document.head.appendChild(tag);
+
+  let player, timer;
+  window.onYouTubeIframeAPIReady = function(){
+    player = new YT.Player("player", {
+      videoId: CONFIG.youtubeId,
+      playerVars: { rel: 0, playsinline: 1, modestbranding: 1 },
+      events: {
+        onStateChange: function(e){
+          if (e.data === YT.PlayerState.PLAYING){
+            clearInterval(timer);
+            timer = setInterval(() => {
+              const d = player.getDuration(), t = player.getCurrentTime();
+              if (d > 0) {
+                setProgress(t / d * 100);
+                // 終盤で静かに開く（まだ話している途中なので自動スクロールはしない）
+                if (CONFIG.openBeforeEndSec > 0 && t >= d - CONFIG.openBeforeEndSec) openBooking(false);
+              }
+            }, 1000);
+          } else {
+            clearInterval(timer);
+          }
+          if (e.data === YT.PlayerState.ENDED){
+            openBooking(false);
+            setTimeout(() => $("booking").scrollIntoView({behavior:"smooth", block:"start"}), 300);
+          }
+        },
+        onError: function(){ openBooking(false); }
+      }
+    });
+  };
+})();
+</script>
+</body>
+</html>
